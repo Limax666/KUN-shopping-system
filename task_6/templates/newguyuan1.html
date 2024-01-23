@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>雇员中心</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+  <h1>订单申请列表</h1>
+  <div id="order-list"></div>
+
+  <script>
+    // 获取订单申请
+    function fetchOrders() {
+      $.ajax({
+        url: "http://localhost:5000/showtencent",
+        method: "GET",
+        dataType: "json",
+        success: function(response) {
+          displayOrders(response);
+        },
+        error: function() {
+          alert("无法获取订单申请。");
+        }
+      });
+    }
+
+    // 显示订单申请
+    function displayOrders(orders) {
+      var orderList = $("#order-list");
+      orderList.empty();
+
+      if (orders.length === 0) {
+        orderList.append("<p>暂无订单申请。</p>");
+      } else {
+        for (var i = 0; i < orders.length; i++) {
+          var order = orders[i];
+          var customerId = order.客户id;
+
+          var orderDiv = $("<div>");
+          var orderText = $("<p>").text("客户ID:" + customerId);
+          var acceptButton = $("<button>").text("同意").click(function() {
+            acceptOrder(customerId);
+          });
+          var rejectButton = $("<button>").text("拒绝").click(function() {
+            rejectOrder(customerId);
+          });
+
+          orderDiv.append(orderText, acceptButton, rejectButton);
+          orderList.append(orderDiv);
+        }
+      }
+    }
+
+    // 同意订单申请
+    function acceptOrder(customerId) {
+      var employeeId = 1;  // 将此处替换为雇员的ID
+
+      var data = {
+        deal: 1
+      };
+
+      $.ajax({
+        url: "http://localhost:5000/tencent",
+        method: "POST",
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function(response) {
+          alert("已同意订单申请。");
+          fetchOrders();  // 刷新订单列表
+        },
+        error: function() {
+          alert("无法处理订单申请。");
+        }
+      });
+    }
+
+    // 拒绝订单申请
+    function rejectOrder(customerId) {
+      var data = {
+        deal: 0
+      };
+
+      $.ajax({
+        url: "http://localhost:5000/tencent",
+        method: "POST",
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: 'application/json',
+        success: function(response) {
+          alert("已拒绝订单申请。");
+          fetchOrders();  // 刷新订单列表
+        },
+        error: function() {
+          alert("无法处理订单申请。");
+        }
+      });
+    }
+
+    // 页面加载时获取订单列表
+    $(document).ready(function() {
+      fetchOrders();
+    });
+  </script>
+</body>
+</html>

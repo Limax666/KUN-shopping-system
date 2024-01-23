@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>产品列表</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product-list {
+            flex-basis: 70%;
+        }
+
+        .cart {
+            flex-basis: 30%;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        var cartItems = []; // 存储购物车中的产品
+        var fl=0;
+        $(document).ready(function() {
+            // 加载产品列表
+            $.getJSON("http://localhost:5000/products", function(data) {
+                $.each(data, function(index, product) {
+                    var stock = product.中止 == true ? "在售" : "售罄";
+                    var addButton = '<button onclick="addToCart(' + product.产品id + ', \'' + product.产品名称 + '\')">+</button>';
+                    var row = '<tr><td>' + product.产品id + '</td><td>' + product.产品名称 +'</td><td>'+product.单位数量+'</td><td>' + stock + '</td><td>' + addButton + '</td></tr>';
+                    $('#productList tbody').append(row);
+                });
+            });
+        });
+
+        // 将产品添加到购物车
+        function addToCart(productId,productName) {
+            // 检查产品是否已经在购物车中
+            var existingItem = cartItems.find(function(item) {
+                return item.id === productId;
+            });
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                fl=fl+1;
+                var newItem = {
+                    id: productId,
+                    name: productName,
+                    quantity: 1
+                };
+                cartItems.push(newItem);
+            }
+            updateCart(); // 更新购物车显示
+        }
+
+        // 更新购物车显示
+        function updateCart() {
+            $('#cart').empty();
+
+            if (cartItems.length === 0) {
+                $('#cart').html('<p>购物车是空的。</p>');
+                return;
+            }
+
+            var cartContent = '<table><thead><tr><th>物品ID</th><th>产品名称</th><th>数量</th></tr></thead><tbody>';
+
+            $.each(cartItems, function(index, item) {
+                cartContent += '<tr><td>' + item.id + '</td><td>'+item.name +'</td><td>'+ item.quantity + '</td></tr>';
+            });
+
+            cartContent += '</tbody></table>';
+
+            $('#cart').html(cartContent);
+        }
+
+
+        function checkout() {
+  // 构建订单信息
+  var order = {
+    flag: fl,
+    items: cartItems
+  };
+
+  // 创建 XMLHttpRequest 对象
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "http://localhost:5000/purchase", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // 结算成功，跳转到指定页面
+      window.location.href = "http://localhost:5000/receive_order";
+    } else {
+      alert("结算成功");
+    }
+  };
+
+  xhr.onerror = function() {
+  window.location.href = "http://localhost:5000/receive_order";
+    alert("结算失败");
+  };
+
+  // 发送购物车信息给后端
+  xhr.send(JSON.stringify(order));
+}
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="product-list">
+            <h1>产品列表</h1>
+            <table id="productList">
+                <thead>
+                    <tr>
+                        <th>物品ID</th>
+                        <th>物品名字</th>
+                        <th>规格</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 产品会动态加载到这里 -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cart">
+            <h1>购物车</h1>
+            <div id="cart">
+                <!-- 购物车内容会动态加载到这里 -->
+            </div>
+
+            <button onclick="checkout()">结算</button>
+        </div>
+    </div>
+</body>
+</html>

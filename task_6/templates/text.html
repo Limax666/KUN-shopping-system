@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Center</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Center</h1>
+  <table id="orderTable">
+    <tr>
+      <th>Order ID</th>
+      <th>Item ID</th>
+      <th>Quantity</th>
+    </tr>
+  </table>
+  
+  <script>
+    // 发起AJAX请求获取JSON数据
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://localhost:5000/show_dd", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var orders = JSON.parse(xhr.responseText);
+        displayOrders(orders);
+      }
+    };
+    xhr.send();
+
+    // 将订单数据展示在表格中
+    function displayOrders(orders) {
+      var table = document.getElementById("orderTable");
+      for (var i = 0; i < orders.length; i++) {
+        var order = orders[i];
+        if (order.dd_id !== "") {
+          var row = table.insertRow();
+          var orderIdCell = row.insertCell(0);
+          var itemIdCell = row.insertCell(1);
+          var quantityCell = row.insertCell(2);
+          orderIdCell.innerHTML = order.order_id;
+          itemIdCell.innerHTML = order.item_id;
+          quantityCell.innerHTML = order.quantity;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

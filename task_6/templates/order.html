@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>提交订单</title>
+</head>
+<body>
+  <h1>提交订单</h1>
+  <form id="infoForm">
+    <label for="shipperName">货主名称:</label>
+    <input type="text" id="shippername" name="shippername"><br><br>
+
+    <label for="shipperAddress">货主地址:</label>
+    <input type="text" id="shipperaddress" name="shipperaddress"><br><br>
+
+    <label for="shipperRegion">货主地区:</label>
+    <input type="text" id="shipperregion" name="shipperregion"><br><br>
+
+    <label for="shipperCity">货主城市:</label>
+    <input type="text" id="shippercity" name="shippercity"><br><br>
+
+    <label for="shipperCountry">货主国家:</label>
+    <input type="text" id="shippercountry" name="shippercountry"><br><br>
+
+    <label for="shipperPostalCode">货主邮政编码:</label>
+    <input type="text" id="shipperpostalcode" name="shipperpostalcode"><br><br>
+
+    <input type="submit" value="提交">
+  </form>
+
+  <script>
+    document.getElementById('infoForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // 阻止表单的默认提交行为
+
+      // 构建一个对象来保存用户填写的信息
+      var info = {
+        货主名称: document.getElementById('shippername').value,
+        货主地址: document.getElementById('shipperaddress').value,
+        货主地区: document.getElementById('shipperregion').value,
+        货主城市: document.getElementById('shippercity').value,
+        货主国家: document.getElementById('shippercountry').value,
+        货主邮政编码: document.getElementById('shipperpostalcode').value
+      };
+
+      // 将信息转换为 JSON 格式
+      var jsonData = JSON.stringify(info);
+
+      // 发送 POST 请求将 JSON 数据传递给后端
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:5000/order', true);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          alert('信息已成功提交！');
+          // 清空表单
+          document.getElementById('infoForm').reset();
+        }
+      };
+      xhr.send(jsonData);
+    });
+  </script>
+</body>
+</html>

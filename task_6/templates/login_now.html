@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="{{ css_url }}">
+</head>
+<body>
+    <h1>{{ message }}</h1>
+    <form  method="post">
+        <p>
+            <label for="username">Username:</label>
+            <input type="username" name="username" id="username" placeholder="用户名" required>
+        </p>
+        <p>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" placeholder="密码" required>
+        </p>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

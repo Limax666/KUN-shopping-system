@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>查看Cookie</title>
+  <script>
+    function showCookies() {
+      var cookies = document.cookie.split(';');
+      var cookieData = {};
+
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim().split('=');
+        var name = cookie[0];
+        var value = cookie[1];
+        cookieData[name] = value;
+      }
+
+      var username = cookieData.username;
+      var password = cookieData.password;
+      var customer_id = cookieData.customer_id;
+
+      var output = "Username: " + username + "<br>" +
+                   "Password: " + password + "<br>" +
+                   "Customer ID: " + customer_id;
+
+      document.getElementById("output").innerHTML = output;
+    }
+  </script>
+</head>
+<body>
+  <button onclick="showCookies()">显示Cookie</button>
+  <div id="output"></div>
+</body>
+</html>

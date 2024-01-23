@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户中心</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>用户中心</h1>
+    
+    <button id="sendOrderButton">发送订单申请</button>
+    
+    <h2>申请成功的订单</h2>
+    <ul id="orderList"></ul>
+    
+    <h2>已购买成功订单</h2>
+    <table id="orderTable">
+        <tr>
+          <th>Order ID</th>
+          <th>Item ID</th>
+          <th>Quantity</th>
+        </tr>
+      </table>
+    
+    <script>
+        // 监听按钮点击事件
+        $('#sendOrderButton').click(function() {
+            // 创建包含订单数据的 JSON 对象
+            var orderData = {
+                apply : 1
+            };
+
+            // 将 JSON 对象转换为字符串
+            var jsonData = JSON.stringify(orderData);
+
+            // 发送 POST 请求到后端
+            $.ajax({
+                url: 'http://localhost:5000/accept',  // 将此处替换为实际的后端 URL
+                type: 'POST',
+                data: jsonData,
+                contentType: 'application/json',
+                success: function(response) {
+                    // 请求成功的回调函数
+                    console.log('订单申请已发送');
+                    displayOrderDetails(response);  // 显示订单详情
+                },
+                error: function(xhr, status, error) {
+                    // 请求失败的回调函数
+                    console.error('订单申请发送失败:', error);
+                }
+            });
+        });
+
+       // 发起AJAX请求获取JSON数据
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open("GET", "http://localhost:5000/show_dd", true);
+    xhr1.onreadystatechange = function() {
+      if (xhr1.readyState === 4 && xhr1.status === 200) {
+        var orders = JSON.parse(xhr1.responseText);
+        displayOrders(orders);
+      }
+    };
+    xhr1.send();
+
+    // 将订单数据展示在表格中
+    function displayOrders(orders) {
+      var table = document.getElementById("orderTable");
+      for (var i = 0; i < orders.length; i++) {
+        var order = orders[i];
+        if (order.dd_id !== "") 
+        {
+          var row = table.insertRow();
+          var orderIdCell = row.insertCell(0);
+          var itemIdCell = row.insertCell(1);
+          var quantityCell = row.insertCell(2);
+          orderIdCell.innerHTML = order.dd_id;
+          itemIdCell.innerHTML = order.name;
+          quantityCell.innerHTML = order.num;
+        }
+        else
+        {
+          var row = table.insertRow();
+          var orderIdCell = row.insertCell(0);
+          var itemIdCell = row.insertCell(1);
+          var quantityCell = row.insertCell(2);
+          orderIdCell.innerHTML = " ";
+          itemIdCell.innerHTML = order.name;
+          quantityCell.innerHTML = order.num;
+        }
+      }
+    }
+
+     // 发起AJAX请求获取JSON数据
+     var xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://localhost:5000/success_id", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        var orders = JSON.parse(xhr.responseText);
+        displayOrders2(orders);
+      }
+    };
+    xhr.send();
+
+    // 将订单数据展示在列表中
+    function displayOrders2(orders) {
+      var orderList = document.getElementById("orderList");
+      for (var i = 0; i < orders.length; i++) {
+        var order = orders[i];
+        var listItem = document.createElement("li");
+        listItem.innerHTML = order.订单id;
+        var button = document.createElement("button");
+        button.innerHTML = "去购买";
+        button.setAttribute("data-ddid", order.订单id);
+        button.addEventListener("click", sendDdId);
+        listItem.appendChild(button);
+        orderList.appendChild(listItem);
+      }
+    }
+
+    // 点击按钮发送DD ID给后端，并跳转到产品列表界面
+    function sendDdId(event) {
+      var ddId = event.target.getAttribute("data-ddid");
+      var data = { "dd_id": ddId };
+      var xhr1 = new XMLHttpRequest();
+      xhr1.open("POST", "http://localhost:5000/receive_dd", true);
+      xhr1.setRequestHeader("Content-Type", "application/json");
+      window.location.href = "http://localhost:5000/showgouwu";
+      xhr1.send(JSON.stringify(data));
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>完善信息</title>
+</head>
+<body>
+  <h1>完善信息</h1>
+  <form id="infoForm">
+    <label for="customerId">客户ID:</label>
+    <input type="text" id="customerid" name="customerid"><br><br>
+
+    <label for="companyName">公司名称:</label>
+    <input type="text" id="companyname" name="companyname"><br><br>
+
+    <label for="contactName">联系人姓名:</label>
+    <input type="text" id="contactname" name="contactname"><br><br>
+
+    <label for="contactTitle">联系人职务:</label>
+    <input type="text" id="contacttitle" name="contacttitle"><br><br>
+
+    <label for="address">地址:</label>
+    <input type="text" id="address" name="address"><br><br>
+
+    <label for="city">城市:</label>
+    <input type="text" id="city" name="city"><br><br>
+
+    <label for="region">地区:</label>
+    <input type="text" id="region" name="region"><br><br>
+
+    <label for="postalCode">邮政编码:</label>
+    <input type="text" id="postalcode" name="postalcode"><br><br>
+
+    <label for="country">国家:</label>
+    <input type="text" id="country" name="country"><br><br>
+
+    <label for="phone">电话:</label>
+    <input type="text" id="phone" name="phone"><br><br>
+
+    <label for="fax">传真:</label>
+    <input type="text" id="fax" name="fax"><br><br>
+
+    <input type="submit" value="提交">
+  </form>
+
+  <script>
+    document.getElementById('infoForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // 阻止表单的默认提交行为
+
+      // 构建一个对象来保存用户填写的信息
+      var info = {
+        客户id: document.getElementById('customerid').value,
+        公司名称: document.getElementById('companyname').value,
+        联系人姓名: document.getElementById('contactname').value,
+        联系人职务: document.getElementById('contacttitle').value,
+        地址: document.getElementById('address').value,
+        城市: document.getElementById('city').value,
+        地区: document.getElementById('region').value,
+        邮政编码: document.getElementById('postalcode').value,
+        国家: document.getElementById('country').value,
+        电话: document.getElementById('phone').value,
+        传真: document.getElementById('fax').value
+      };
+
+      // 将信息转换为 JSON 格式
+      var jsonData = JSON.stringify(info);
+
+      // 发送 POST 请求将 JSON 数据传递给后端
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:5000/filling', true);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          alert('信息已成功提交！');
+          // 清空表单
+          document.getElementById('infoForm').reset();
+        }
+      };
+      xhr.send(jsonData);
+    });
+  </script>
+</body>
+</html>
